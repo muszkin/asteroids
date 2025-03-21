@@ -29,7 +29,6 @@ class Player(CircleShape):
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
-        self.cooldown -= dt
         if keys[pygame.K_a]:
             self.rotate(-dt)
         if keys[pygame.K_d]:
@@ -39,14 +38,17 @@ class Player(CircleShape):
         if keys[pygame.K_s]:
             self.move(-dt)
         if keys[pygame.K_SPACE]:
-            if self.cooldown <= 0:
+            if self.cooldown == 0:
                 self.shot()
-
+                self.cooldown = PLAYER_SHOOT_COOLDOWN
+        if self.cooldown > 0:
+            self.cooldown -= dt
+            if self.cooldown < 0:
+                self.cooldown = 0
 
     def shot(self):
         shot = Shot(self.position.x, self.position.y)
         shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
-        self.cooldown += PLAYER_SHOOT_COOLDOWN
 
     def move(self, dt):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
